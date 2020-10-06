@@ -9,6 +9,7 @@ from torchvision import transforms
 import torchvision.utils as vutils
 from torchvision.datasets import CelebA
 from torch.utils.data import DataLoader
+import torchvision
 
 
 class VAEXperiment(pl.LightningModule):
@@ -140,7 +141,11 @@ class VAEXperiment(pl.LightningModule):
             dataset = CelebA(root = self.params['data_path'],
                              split = "train",
                              transform=transform,
-                             download=False)
+                             download=True)
+        elif self.params['dataset'] == 'user':
+            dataset = torchvision.datasets.ImageFolder(
+                            root=self.params['data_path']+'train/', 
+                            transform=transform)
         else:
             raise ValueError('Undefined dataset type')
 
@@ -155,17 +160,23 @@ class VAEXperiment(pl.LightningModule):
         transform = self.data_transforms()
 
         if self.params['dataset'] == 'celeba':
-            self.sample_dataloader =  DataLoader(CelebA(root = self.params['data_path'],
-                                                        split = "test",
-                                                        transform=transform,
-                                                        download=False),
-                                                 batch_size= 144,
-                                                 shuffle = True,
-                                                 drop_last=True)
-            self.num_val_imgs = len(self.sample_dataloader)
+            dataset = CelebA(root = self.params['data_path'],
+                            split = "test",
+                            transform=transform,
+                            download=False)
+        elif self.params['dataset'] == 'user':
+            dataset = torchvision.datasets.ImageFolder(
+                            root=self.params['data_path']+'test/', 
+                            transform=transform)
         else:
             raise ValueError('Undefined dataset type')
 
+        self.num_val_imgs = len(dataset)
+        self.sample_dataloader =  DataLoader(dataset,
+                            batch_size= self.params['batch_size'],
+                            shuffle = True,
+                            drop_last=True)
+        # self.num_val_imgs = len(self.sample_dataloader)
         return self.sample_dataloader
 
     def data_transforms(self):
@@ -179,7 +190,19 @@ class VAEXperiment(pl.LightningModule):
                                             transforms.Resize(self.params['img_size']),
                                             transforms.ToTensor(),
                                             SetRange])
+        elif self.params['dataset'] == 'user':
+            transform = torchvision.transforms.Compose([
+                torchvision.transforms.Resize(size=self.params['img_size']),
+                torchvision.transforms.ColorJitter(brightness=0.5, 
+                                                contrast=0.5,
+                                                saturation=0.5,
+                                                hue=0.05),
+                torchvision.transforms.ToTensor()
+                ])
         else:
             raise ValueError('Undefined dataset type')
         return transform
 
+# train_dataset = torchvision.datasets.ImageFolder(root=input_folder, transform=transform)
+# train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers, drop_last=True)
+	

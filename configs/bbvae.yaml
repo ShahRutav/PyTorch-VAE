@@ -3,13 +3,15 @@ model_params:
   in_channels: 3
   latent_dim: 128
   loss_type: 'B'
-  gamma: 10.0
+  gamma: .000000000001
   max_capacity: 25
   Capacity_max_iter: 10000
 
 exp_params:
-  dataset: celeba
-  data_path: "../../shared/Data/"
+  # dataset: celeba
+  # data_path: "../../shared/Data/"
+  dataset: user
+  data_path: "/home/vikash/Libraries/latentRL/latentRL/dataset/big64/"
   img_size: 64
   batch_size: 144 # Better to have a square number
   LR: 0.0005
@@ -22,6 +24,7 @@ trainer_params:
   max_epochs: 50
 
 logging_params:
-  save_dir: "logs/"
+  save_dir: "/home/vikash/Projects/latentRL/logs/"
+  # save_dir: "logs/"
   name: "BetaVAE_B"
   manual_seed: 1265
