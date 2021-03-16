@@ -1,6 +1,7 @@
 import yaml
 import argparse
 import numpy as np
+import os
 
 from models import *
 from experiment import VAEXperiment
@@ -32,8 +33,9 @@ tt_logger = TestTubeLogger(
 )
 
 # For reproducibility
-torch.manual_seed(config['logging_params']['manual_seed'])
-np.random.seed(config['logging_params']['manual_seed'])
+if 'manual_seed' in config['logging_params'] :
+    torch.manual_seed(config['logging_params']['manual_seed'])
+    np.random.seed(config['logging_params']['manual_seed'])
 cudnn.deterministic = True
 cudnn.benchmark = False
 
@@ -44,9 +46,8 @@ experiment = VAEXperiment(model,
 runner = Trainer(default_save_path=f"{tt_logger.save_dir}",
                  min_nb_epochs=1,
                  logger=tt_logger,
-                 log_save_interval=100,
+                 log_save_interval=1,
                  train_percent_check=1.,
-                 val_percent_check=1.,
                  num_sanity_val_steps=5,
                  early_stop_callback = False,
                  **config['trainer_params'])

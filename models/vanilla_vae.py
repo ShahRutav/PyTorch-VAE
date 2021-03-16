@@ -16,6 +16,7 @@ class VanillaVAE(BaseVAE):
         super(VanillaVAE, self).__init__()
 
         self.latent_dim = latent_dim
+        out_channels = in_channels
 
         modules = []
         if hidden_dims is None:
@@ -60,7 +61,6 @@ class VanillaVAE(BaseVAE):
 
 
         self.decoder = nn.Sequential(*modules)
-
         self.final_layer = nn.Sequential(
                             nn.ConvTranspose2d(hidden_dims[-1],
                                                hidden_dims[-1],
@@ -70,7 +70,7 @@ class VanillaVAE(BaseVAE):
                                                output_padding=1),
                             nn.BatchNorm2d(hidden_dims[-1]),
                             nn.LeakyReLU(),
-                            nn.Conv2d(hidden_dims[-1], out_channels= 3,
+                            nn.Conv2d(hidden_dims[-1], out_channels=out_channels,
                                       kernel_size= 3, padding= 1),
                             nn.Tanh())
 

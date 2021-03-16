@@ -1,0 +1,10 @@
+#!/bin/sh
+#$ -cwd
+#PBS -N submitjob
+#PBS -q gpu
+#PBS -V
+
+export PATH="/home/bt1/18CS10050/anaconda3/bin:$PATH"
+export PATH="/home/bt1/18CS10050/anaconda3/envs/vae/bin:$PATH"
+
+CUDA_VISIBLE_DEVICES=0,1 python run.py -c configs/latentRL.yaml 
